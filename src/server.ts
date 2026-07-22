@@ -4,10 +4,11 @@
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { ListToolsRequestSchema, CallToolRequestSchema, Tool, TextContent } from '@modelcontextprotocol/sdk/types.js';
+import { ListToolsRequestSchema, CallToolRequestSchema, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { ConfluenceClient } from './confluence-client.js';
 import { createPageTools, executePageTool } from './tools/page-tools.js';
 import { createSearchTools, executeSearchTool } from './tools/search-tools.js';
+import { createAdvancedTools, executeAdvancedTool } from './tools/advanced-tools.js';
 import { ConfluenceConfig } from './types.js';
 
 // Obtener configuración desde variables de entorno
@@ -46,7 +47,8 @@ async function main() {
   // Crear todas las herramientas
   const allTools: Tool[] = [
     ...createPageTools(confluenceClient),
-    ...createSearchTools(confluenceClient)
+    ...createSearchTools(confluenceClient),
+    ...createAdvancedTools(confluenceClient)
   ];
 
   // Handler para listar herramientas
@@ -63,12 +65,12 @@ async function main() {
       let result: string;
 
       // Determinar qué tipo de herramienta es
-      if (allTools.some(t => t.name === toolName && t.name.startsWith('get_confluence_page') || t.name.startsWith('create_confluence_page') || t.name.startsWith('update_confluence_page'))) {
+      if (toolName.includes('page') && !toolName.includes('versions') && !toolName.includes('comments') && !toolName.includes('attachments')) {
         result = await executePageTool(toolName, toolInput, confluenceClient);
-      } else if (allTools.some(t => t.name === toolName)) {
+      } else if (toolName.includes('search') || toolName.includes('spaces') || toolName.includes('space_content')) {
         result = await executeSearchTool(toolName, toolInput, confluenceClient);
       } else {
-        throw new Error(`Unknown tool: ${toolName}`);
+        result = await executeAdvancedTool(toolName, toolInput, confluenceClient);
       }
 
       return {

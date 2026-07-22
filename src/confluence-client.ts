@@ -192,4 +192,171 @@ export class ConfluenceClient {
       links: { webui: item.url }
     })) as ConfluencePage[];
   }
+
+  /**
+   * Eliminar una página
+   */
+  async deletePage(pageId: string): Promise<void> {
+    const url = `${this.baseUrl}/wiki/rest/api/content/${pageId}`;
+    
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete page: ${response.statusText}`);
+    }
+  }
+
+  /**
+   * Agregar un comentario a una página
+   */
+  async addComment(pageId: string, commentText: string): Promise<any> {
+    const url = `${this.baseUrl}/wiki/rest/api/content/${pageId}/comment`;
+    
+    const payload = {
+      body: {
+        version: 1,
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              {
+                type: 'text',
+                text: commentText
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to add comment: ${response.statusText} - ${error}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Obtener versiones/historial de una página
+   */
+  async getPageVersions(pageId: string, limit: number = 25): Promise<any[]> {
+    const url = `${this.baseUrl}/wiki/rest/api/content/${pageId}/version?limit=${limit}`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to get page versions: ${response.statusText}`);
+    }
+
+    const result = await response.json() as { results: any[] };
+    return result.results;
+  }
+
+  /**
+   * Obtener adjuntos de una página
+   */
+  async getPageAttachments(pageId: string, limit: number = 25): Promise<any[]> {
+    const url = `${this.baseUrl}/wiki/rest/api/content/${pageId}/child/attachment?limit=${limit}`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to get attachments: ${response.statusText}`);
+    }
+
+    const result = await response.json() as { results: any[] };
+    return result.results;
+  }
+
+  /**
+   * Agregar un adjunto a una página
+   */
+  async addAttachment(pageId: string, filePath: string, fileName: string): Promise<any> {
+    const url = `${this.baseUrl}/wiki/rest/api/content/${pageId}/child/attachment`;
+    
+    // Lee el archivo
+    const { readFileSync } = await import('fs');
+    const fileContent = readFileSync(filePath);
+    
+    const formData = new FormData();
+    const blob = new Blob([fileContent]);
+    formData.append('file', blob, fileName);
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.headers['Authorization']
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to add attachment: ${response.statusText} - ${error}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Exportar página como PDF
+   */
+  async exportPageToPdf(pageId: string): Promise<ArrayBuffer> {
+    const url = `${this.baseUrl}/wiki/rest/api/content/${pageId}?expand=body.export_view`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to export page: ${response.statusText}`);
+    }
+
+    return response.arrayBuffer();
+  }
+
+  /**
+   * Obtener página como HTML
+   */
+  async exportPageToHtml(pageId: string): Promise<string> {
+    const page = await this.getPage(pageId, ['body.export_view']);
+    return page.body.storage.value;
+  }
+
+  /**
+   * Obtener comentarios de una página
+   */
+  async getPageComments(pageId: string, limit: number = 25): Promise<any[]> {
+    const url = `${this.baseUrl}/wiki/rest/api/content/${pageId}/comment?limit=${limit}&expand=body.view`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to get comments: ${response.statusText}`);
+    }
+
+    const result = await response.json() as { results: any[] };
+    return result.results;
+  }
 }

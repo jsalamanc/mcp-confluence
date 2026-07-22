@@ -1,6 +1,6 @@
 {
   "name": "@jsalamanc_01/mcp-confluence",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Confluence MCP Server for OpenCode - Integrate Confluence with OpenCode AI",
   "type": "module",
   "main": "dist/index.js",
