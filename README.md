@@ -89,7 +89,7 @@ Search for all pages about "API" in Confluence. use confluence
 
 ### Available Tools
 
-#### Search
+#### Search Tools (3)
 
 - **`search_confluence`** - Search Confluence content by keywords
   - Parameters: `query` (string), `limit` (number, default: 25)
@@ -103,7 +103,7 @@ Search for all pages about "API" in Confluence. use confluence
   - Parameters: `space_key` (string), `limit` (number, default: 25)
   - Returns: List of pages in the specified space
 
-#### Pages
+#### Page Management Tools (6)
 
 - **`get_confluence_page`** - Read a page by ID
   - Parameters: `page_id` (string)
@@ -116,6 +116,36 @@ Search for all pages about "API" in Confluence. use confluence
 - **`update_confluence_page`** - Update an existing page
   - Parameters: `page_id` (string), `title` (string), `body` (string), `version_number` (number)
   - Returns: Updated page details
+
+- **`delete_confluence_page`** - Delete a page permanently
+  - Parameters: `page_id` (string)
+  - Returns: Success confirmation
+
+#### Collaboration Tools (3)
+
+- **`add_confluence_comment`** - Add a comment to a page
+  - Parameters: `page_id` (string), `comment_text` (string)
+  - Returns: Comment confirmation with details
+
+- **`get_confluence_page_comments`** - Get all comments on a page
+  - Parameters: `page_id` (string), `limit` (number, default: 25)
+  - Returns: List of all comments with author and timestamp
+
+- **`get_confluence_page_versions`** - Get version history
+  - Parameters: `page_id` (string), `limit` (number, default: 25)
+  - Returns: List of all versions with editor info
+
+#### Attachments & Export Tools (2)
+
+- **`get_confluence_page_attachments`** - List page attachments
+  - Parameters: `page_id` (string), `limit` (number, default: 25)
+  - Returns: List of files attached to the page
+
+- **`export_confluence_page_html`** - Export page as HTML
+  - Parameters: `page_id` (string)
+  - Returns: HTML content of the page
+
+**Total: 14 tools**
 
 ## Examples
 
@@ -132,6 +162,31 @@ Create a new page in the PROJ space titled "API Documentation" with installation
 ### Update a page
 ```
 Update the README page with the latest changes. use confluence
+```
+
+### Delete a page
+```
+Delete the old migration guide page. use confluence
+```
+
+### Add a comment
+```
+Add a comment to the API documentation page saying "Updated with v2 endpoints". use confluence
+```
+
+### View page history
+```
+Show me the version history of the API documentation page. use confluence
+```
+
+### Get all comments
+```
+Get all comments on the deployment guide page. use confluence
+```
+
+### Export a page
+```
+Export the API documentation page as HTML. use confluence
 ```
 
 ## Development
@@ -167,11 +222,12 @@ npm start
 src/
 ├── index.ts                 # Entry point
 ├── server.ts               # MCP server implementation
-├── confluence-client.ts    # Confluence API client
+├── confluence-client.ts    # Confluence API client with all methods
 ├── types.ts                # TypeScript types
 └── tools/
     ├── page-tools.ts       # Page operations (read, create, update)
-    └── search-tools.ts     # Search operations
+    ├── search-tools.ts     # Search operations
+    └── advanced-tools.ts   # Advanced tools (delete, comments, versions, etc)
 ```
 
 ## API Reference
@@ -238,14 +294,29 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Roadmap
 
-- [ ] Delete pages
-- [ ] Add comments to pages
+### ✅ Completed (v0.3.0)
+- [x] Search pages
+- [x] List spaces
+- [x] Get space content
+- [x] Read pages
+- [x] Create pages
+- [x] Update pages
+- [x] Delete pages
+- [x] Add comments
+- [x] Get page comments
+- [x] Get page versions/history
+- [x] List page attachments
+- [x] Export pages as HTML
+
+### 🚀 Planned Features
+- [ ] Upload attachments to pages
+- [ ] Export pages to PDF
 - [ ] Manage page permissions
-- [ ] Export pages to different formats
-- [ ] Manage attachments
 - [ ] Work with page macros
 - [ ] Batch operations
-- [ ] Page history/versions
+- [ ] Watch/subscribe to page changes
+- [ ] Move pages between spaces
+- [ ] Archive/restore pages
 
 ## License
 
