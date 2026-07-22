@@ -1,0 +1,51 @@
+{
+  "name": "@jsalamanc_01/mcp-confluence",
+  "version": "0.1.0",
+  "description": "Confluence MCP Server for OpenCode - Integrate Confluence with OpenCode AI",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-confluence": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "confluence",
+    "opencode",
+    "atlassian",
+    "model-context-protocol",
+    "ai-coding"
+  ],
+  "author": "jsalamanc_01",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/mcp-confluence"
+  },
+  "homepage": "https://github.com/yourusername/mcp-confluence",
+  "bugs": {
+    "url": "https://github.com/yourusername/mcp-confluence/issues"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.3.0",
+    "tsx": "^4.7.0"
+  }
+}
